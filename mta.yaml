@@ -1,0 +1,140 @@
+_schema-version: 3.3.0
+ID: NewLoanFeature
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: NewLoanFeature-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: NewLoanFeature-db
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    instances: 1
+  build-parameters:
+    builder: npm-ci
+- name: NewLoanFeature-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: NewLoanFeature-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: NewLoanFeature-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: NewLoanFeature-destination-service
+    parameters:
+      content-target: true
+  - name: NewLoanFeature_html_repo_host
+    parameters:
+      service-key:
+        name: NewLoanFeature_html_repo_host-key
+  - name: uaa_NewLoanFeature
+    parameters:
+      service-key:
+        name: uaa_NewLoanFeature-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: newFeature_NewLoanFeature_html_repo_host
+          ServiceInstanceName: NewLoanFeature-html5-app-host-service
+          ServiceKeyName: NewLoanFeature_html_repo_host-key
+          sap.cloud.service: newFeature
+        - Authentication: OAuth2UserTokenExchange
+          Name: newFeature_uaa_NewLoanFeature
+          ServiceInstanceName: NewLoanFeature-xsuaa-service
+          ServiceKeyName: uaa_NewLoanFeature-key
+          sap.cloud.service: newFeature
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: NewLoanFeature-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: NewLoanFeature_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - newfeature.zip
+      name: newfeature
+      target-path: resources/
+    - artifacts:
+      - auditlistreport.zip
+      name: auditlistreport
+      target-path: resources/
+- name: newfeature
+  type: html5
+  path: app/newfeature
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: auditlistreport
+  type: html5
+  path: app/auditlistreport
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: NewLoanFeature-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: NewLoanFeature-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: NewLoanFeature-destination-service
+    service-plan: lite
+- name: NewLoanFeature_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: NewLoanFeature-html5-app-host-service
+    service-plan: app-host
+- name: uaa_NewLoanFeature
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: NewLoanFeature-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production

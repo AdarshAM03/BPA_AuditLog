@@ -1,0 +1,1 @@
+using SimpleService as service from '../../srv/service';

@@ -104,7 +104,11 @@
 			}
 		},
 		"resources": {
-			"css": []
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
 		},
 		"routing": {
 			"config": {},
@@ -178,6 +182,15 @@
 							"editableHeaderContent": false,
 							"contextPath": "/Customers/customerToproducts"
 						}
+					}
+				}
+			}
+		},
+		"extends": {
+			"extensions": {
+				"sap.ui.controllerExtensions": {
+					"sap.fe.templates.ObjectPage.ObjectPageController#newfeature::CustomersObjectPage": {
+						"controllerName": "newfeature.ext.controller.CustomerObjPage"
 					}
 				}
 			}

@@ -1,14 +1,14 @@
 {
-  "ext/controller/CustomerObjPage-dbg.controller.js": 1772127495849,
+  "ext/controller/CustomerObjPage.controller.js.map": 1772457053029,
   "Component.js": 1772004014171,
   "manifest.json": 1772124793313,
   "ext/controller/CustomerObjPage.controller.js": 1772127495849,
+  "ext/controller/CustomerObjPage-dbg.controller.js": 1772127495849,
   "i18n/i18n.properties": 1772004033736,
-  "ext/controller/CustomerObjPage.controller.js.map": 1772176625562,
   "Component-dbg.js": 1772004014171,
-  "Component.js.map": 1772176625554,
-  "Component-preload.js": 1772176625633,
-  "Component-preload.js.map": 1772176625633,
+  "Component.js.map": 1772457053022,
+  "Component-preload.js": 1772457053097,
+  "Component-preload.js.map": 1772457053097,
   "css/style.css": 1772125893576,
   "index.html": 1772004014171
 }
